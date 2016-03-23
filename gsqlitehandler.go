@@ -13,6 +13,7 @@ import (
 
 // Error messages
 const (
+	errFileNotExists       = "file not exists"
 	errFileAlreadyExists   = "file already exists"
 	errFileCannotBeCreated = "file cannot be created"
 	errFileCannotBeOpen    = "file cannot be open"
@@ -115,6 +116,12 @@ func (d *SqliteDB) CreateNew(sqlCreateTablesStmt string) error {
 // current SqliteDB Properties. If so, returns true. Otherwise it returns false.
 func (d *SqliteDB) Open() error {
 	var fileErr error
+
+	// Test if a file exist
+	if _, err := os.Stat(d.Path); os.IsNotExist(err) {
+		return errors.New(errFileNotExists)
+	}
+
 	d.Handler, fileErr = sql.Open("sqlite3", d.Path)
 	if fileErr != nil {
 		return errors.New(errFileCannotBeOpen)
