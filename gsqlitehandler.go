@@ -13,11 +13,11 @@ import (
 
 // Error messages
 const (
-	errFileNotExists       = "file not exists"
+	errFileNotExists       = "file does not exist"
 	errFileAlreadyExists   = "file already exists"
 	errFileCannotBeCreated = "file cannot be created"
 	errFileCannotBeOpen    = "file cannot be open"
-	errFileNotAppDB        = "given file is not an appropriate gBicLog file"
+	errFileNotAppDB        = "given file is not a valid file"
 )
 
 // SqliteDB struct is the basic wrapper type for sqlite object.

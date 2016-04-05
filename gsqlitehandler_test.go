@@ -36,8 +36,8 @@ func TestCreateNewFile(t *testing.T) {
 	testdb.Close()
 
 	// Open file with different properties
-	dbProperties["additional"]="temporary"
-	testdb=New(testDBFile,dbProperties)
+	dbProperties["additional"] = "temporary"
+	testdb = New(testDBFile, dbProperties)
 	err = testdb.Open()
 	if err == nil {
 		t.Errorf("%s", err)
