@@ -13,11 +13,26 @@ const (
 	testDBFile = "testdb.sqlite"
 )
 
+type testDB struct {
+	SqliteDB
+}
+
+func (t *testDB) newTestDBTable() error {
+	sqlString := "CREATE TABLE tmp_table (id INTEGER PRIMARY KEY, name TEXT);"
+	err := t.CreateNew(sqlString)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func TestCreateNewFile(t *testing.T) {
 	dbProperties := map[string]string{"applicationName": "gBicLog", "databaseVersion": "0.1"}
-	sqlString := "CREATE TABLE tmp_table (id INTEGER PRIMARY KEY, name TEXT);"
-	testdb := New(testDBFile, dbProperties)
-	err := testdb.CreateNew(sqlString)
+
+	var testdb testDB
+	testdb.Init(testDBFile, dbProperties)
+	err := testdb.newTestDBTable()
 	if err != nil {
 		t.Errorf("%s", err)
 	}
@@ -37,11 +52,12 @@ func TestCreateNewFile(t *testing.T) {
 
 	// Open file with different properties
 	dbProperties["additional"] = "temporary"
-	testdb = New(testDBFile, dbProperties)
-	err = testdb.Open()
+	var testdb2 testDB
+	testdb2.Init(testDBFile, dbProperties)
+	err = testdb2.Open()
 	if err == nil {
 		t.Errorf("%s", err)
 	}
-	testdb.Close()
+	testdb2.Close()
 
 }

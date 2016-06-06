@@ -1,6 +1,8 @@
 // Written 2016 by Marcin 'Zbroju' Zbroinski.
 // Use of this source code is governed by a GNU General Public License
 // that can be found in the LICENSE file.
+// Version 2.0.0
+
 package gsqlitehandler
 
 import (
@@ -54,12 +56,10 @@ func (d *SqliteDB) isCorrectDB() bool {
 	return true
 }
 
-// New returns new SqliteDB object with Path and properties initialized.
-func New(dbPath string, properties map[string]string) *SqliteDB {
-	tmpDB := new(SqliteDB)
-	tmpDB.Path = dbPath
-	tmpDB.Properties = properties
-	return tmpDB
+// New initialize a new SqliteDB object with given file path (dbPath) and signature (properties).
+func (d *SqliteDB) Init(dbPath string, properties map[string]string) {
+	d.Path = dbPath
+	d.Properties = properties
 }
 
 // CreateNew creates tables from the given SQL code (sqlCreateTablesStmt) and PROPERTIES table.
