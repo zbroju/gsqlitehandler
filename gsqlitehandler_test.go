@@ -30,8 +30,9 @@ func (t *testDB) newTestDBTable() error {
 func TestCreateNewFile(t *testing.T) {
 	dbProperties := map[string]string{"applicationName": "gBicLog", "databaseVersion": "0.1"}
 
-	var testdb testDB
-	testdb.Init(testDBFile, dbProperties)
+	testdb:=new(testDB)
+	testdb.Path=testDBFile
+	testdb.Properties=dbProperties
 	err := testdb.newTestDBTable()
 	if err != nil {
 		t.Errorf("%s", err)
@@ -52,8 +53,9 @@ func TestCreateNewFile(t *testing.T) {
 
 	// Open file with different properties
 	dbProperties["additional"] = "temporary"
-	var testdb2 testDB
-	testdb2.Init(testDBFile, dbProperties)
+	testdb2:=new(testDB)
+	testdb2.Path=testDBFile
+	testdb2.Properties=dbProperties
 	err = testdb2.Open()
 	if err == nil {
 		t.Errorf("%s", err)

@@ -56,12 +56,6 @@ func (d *SqliteDB) isCorrectDB() bool {
 	return true
 }
 
-// Init initialize a new SqliteDB object with given file path (dbPath) and signature (properties).
-func (d *SqliteDB) Init(dbPath string, properties map[string]string) {
-	d.Path = dbPath
-	d.Properties = properties
-}
-
 // CreateNew creates tables from the given SQL code (sqlCreateTablesStmt) and PROPERTIES table.
 // PROPERTIES table is populated with SqliteDB Properties key-value pair(s).
 func (d *SqliteDB) CreateNew(sqlCreateTablesStmt string) error {
