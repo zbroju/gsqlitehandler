@@ -29,31 +29,13 @@ type SqliteDB struct {
 	Handler    *sql.DB
 }
 
-// isCorrectDB compares tags from table PROPERTIES with the SqliteDB Properties.
-// Returns true if the tags in table PROPERTIES are equal to Sqlite Properties, or false otherwise.
-func (d *SqliteDB) isCorrectDB() bool {
-	rows, err := d.Handler.Query("SELECT KEY, VALUE FROM PROPERTIES;")
-	if err != nil {
-		return false
-	}
-	defer rows.Close()
-	var tagCounter int
-	for rows.Next() {
-		var key, value string
-		err = rows.Scan(&key, &value)
-		if err != nil {
-			return false
-		}
-		if d.Properties[key] != "" && d.Properties[key] != value {
-			return false
-		}
-		tagCounter++
-	}
-	if len(d.Properties) != tagCounter {
-		return false
-	}
+// New returns new SqliteDB object with Path and properties initialized.
+func New(dbPath string, properties map[string]string) *SqliteDB {
+	tmpDB := new(SqliteDB)
+	tmpDB.Path = dbPath
+	tmpDB.Properties = properties
 
-	return true
+	return tmpDB
 }
 
 // CreateNew creates tables from the given SQL code (sqlCreateTablesStmt) and PROPERTIES table.
@@ -66,16 +48,14 @@ func (d *SqliteDB) CreateNew(sqlCreateTablesStmt string) error {
 
 	// Open file
 	var fileErr error
-	d.Handler, fileErr = sql.Open("sqlite3", d.Path)
-	if fileErr != nil {
+	if d.Handler, fileErr = sql.Open("sqlite3", d.Path);fileErr != nil {
 		return errors.New(errFileCannotBeCreated)
 	}
 	defer d.Handler.Close()
 
 	// Create tables
 	sqlStmt := fmt.Sprintf("BEGIN TRANSACTION;CREATE TABLE properties (key TEXT, value TEXT);%sCOMMIT;", sqlCreateTablesStmt)
-	_, err := d.Handler.Exec(sqlStmt)
-	if err != nil {
+	if _, err := d.Handler.Exec(sqlStmt);err != nil {
 		os.Remove(d.Path)
 		return errors.New(errFileCannotBeCreated)
 	}
@@ -116,8 +96,7 @@ func (d *SqliteDB) Open() error {
 		return errors.New(errFileNotExists)
 	}
 
-	d.Handler, fileErr = sql.Open("sqlite3", d.Path)
-	if fileErr != nil {
+	if d.Handler, fileErr = sql.Open("sqlite3", d.Path);fileErr != nil {
 		return errors.New(errFileCannotBeOpen)
 	}
 	if d.isCorrectDB() == false {
@@ -132,4 +111,31 @@ func (d *SqliteDB) Close() {
 	d.Path = ""
 	d.Properties = make(map[string]string)
 	d.Handler.Close()
+}
+
+// isCorrectDB compares tags from table PROPERTIES with the SqliteDB Properties.
+// Returns true if the tags in table PROPERTIES are equal to Sqlite Properties, or false otherwise.
+func (d *SqliteDB) isCorrectDB() bool {
+	rows, err := d.Handler.Query("SELECT KEY, VALUE FROM PROPERTIES;")
+	if err != nil {
+		return false
+	}
+	defer rows.Close()
+	var tagCounter int
+	for rows.Next() {
+		var key, value string
+		err = rows.Scan(&key, &value)
+		if err != nil {
+			return false
+		}
+		if d.Properties[key] != "" && d.Properties[key] != value {
+			return false
+		}
+		tagCounter++
+	}
+	if len(d.Properties) != tagCounter {
+		return false
+	}
+
+	return true
 }
